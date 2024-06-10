@@ -404,7 +404,15 @@ const PostfixEvaluator = () => {
       }
     }
     const lastElement = tempStack.pop();
-    str += `<line x1=${lastElement.gateOutX} y1=${lastElement.gateOutY} x2=${lastElement.gateOutX+150} y2=${lastElement.gateOutY} stroke="black" stroke-width="2" />`;
+    if(!lastElement.isNot) str += `<line x1=${lastElement.gateOutX} y1=${lastElement.gateOutY} x2=${lastElement.gateOutX+150} y2=${lastElement.gateOutY} stroke="black" stroke-width="2" />`;
+    else
+    {
+      str += `<line x1=${lastElement.gateOutX} y1=${lastElement.gateOutY} x2=${lastElement.gateOutX+100} y2=${lastElement.gateOutY} stroke="black" stroke-width="2" />
+      <path d="M ${lastElement.gateOutX+100} ${lastElement.gateOutY-10} L ${lastElement.gateOutX+100+15} ${lastElement.gateOutY} L ${lastElement.gateOutX+100} ${lastElement.gateOutY+10} Z" stroke="black" fill="transparent" stroke-width="2" />
+                <circle cx=${lastElement.gateOutX+100+19} cy=${lastElement.gateOutY} r="3" fill="none" stroke="black" stroke-width="2"/>
+                <line x1=${lastElement.gateOutX+100+23} y1=${lastElement.gateOutY} x2=${lastElement.gateOutX+100+100} y2=${lastElement.gateOutY} stroke="black" stroke-width="2" />
+                `;
+    }
     str += `</svg>`;
     setStack(tempStack);
     setElements(str);
