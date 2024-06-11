@@ -17,6 +17,7 @@ const ShuntingYardAlgorithm = (infix) => {
     let token = infix[i];
 
     if (/[A-Z]/.test(token)) {
+      
       if (infix[i + 1] === "'") {
         output.push(token + "'");
         i++; 
@@ -31,24 +32,20 @@ const ShuntingYardAlgorithm = (infix) => {
         output.push(top);
         top = stack.pop();
       }
-<<<<<<< HEAD
     } else if (['+', '*', '/', "'"].includes(token)) {
       if (token === "'") {
+        
         output[output.length - 1] += "'";
       } else {
         while (stack.length && ops[stack[stack.length - 1]] >= ops[token]) {
           output.push(stack.pop());
         }
         stack.push(token);
-=======
-    } else if (['+', '*', '/',"'"].includes(token)) {
-      while (stack.length && ops[stack[stack.length - 1]] >= ops[token]) {
-        output.push(stack.pop());
->>>>>>> 194515d6a9b7b5eb7f16418163a4e2dbfaf64ead
       }
     }
   }
 
+  
   while (stack.length) {
     output.push(stack.pop());
   }
