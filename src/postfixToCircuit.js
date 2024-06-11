@@ -31,6 +31,7 @@ const ShuntingYardAlgorithm = (infix) => {
         output.push(top);
         top = stack.pop();
       }
+<<<<<<< HEAD
     } else if (['+', '*', '/', "'"].includes(token)) {
       if (token === "'") {
         output[output.length - 1] += "'";
@@ -39,6 +40,11 @@ const ShuntingYardAlgorithm = (infix) => {
           output.push(stack.pop());
         }
         stack.push(token);
+=======
+    } else if (['+', '*', '/',"'"].includes(token)) {
+      while (stack.length && ops[stack[stack.length - 1]] >= ops[token]) {
+        output.push(stack.pop());
+>>>>>>> 194515d6a9b7b5eb7f16418163a4e2dbfaf64ead
       }
     }
   }
@@ -85,6 +91,8 @@ const PostfixEvaluator = () => {
     e.preventDefault();
     const infix = input.replace(/\s+/g, '').split('');
     const result = ShuntingYardAlgorithm(infix);
+    console.log(result);
+    // const result = `AB+'`;
     setPostfix(result);
     setExpression(result);
     console.log(result);
