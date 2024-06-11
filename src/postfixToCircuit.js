@@ -1,6 +1,59 @@
 import React, { useState } from 'react';
 
+
+const ShuntingYardAlgorithm = (infix) => {
+  const ops = {
+    '+': 1,
+    '*': 2,
+    '/': 2,
+    '(': 0,
+    ')': 0
+  };
+
+  const output = [];
+  const stack = [];
+  
+  for (let i = 0; i < infix.length; i++) {
+    let token = infix[i];
+    
+    if (/[A-Z]/.test(token)) {
+      
+      if (infix[i + 1] === "'") {
+        output.push(token + "'");
+        i++; 
+      } else {
+        output.push(token);
+      }
+    } else if (token === '(') {
+      stack.push(token);
+    } else if (token === ')') {
+      let top = stack.pop();
+      while (top !== '(') {
+        output.push(top);
+        top = stack.pop();
+      }
+    } else if (['+', '*', '/'].includes(token)) {
+      while (stack.length && ops[stack[stack.length - 1]] >= ops[token]) {
+        output.push(stack.pop());
+      }
+      stack.push(token);
+    }
+  }
+
+  while (stack.length) {
+    output.push(stack.pop());
+  }
+
+  return output.join('');
+};
+
+
+
+
+
 const PostfixEvaluator = () => {
+  const [input, setInput] = useState('');
+  const [postfix, setPostfix] = useState('');
   const [expression, setExpression] = useState('');
   const [stack, setStack] = useState([]);
   const [elements, setElements] = useState([]);
@@ -21,7 +74,19 @@ const PostfixEvaluator = () => {
   //   <circle cx="50" cy="105" r="5" fill="none" stroke="black" stroke-width="2"/>`
   // };
 
+  const handleChange = (e) => {
+    setInput(e.target.value);
+  };
 
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const infix = input.replace(/\s+/g, '').split('');
+    const result = ShuntingYardAlgorithm(infix);
+    setPostfix(result);
+    setExpression(result);
+    console.log(result);
+    evaluateExpression(result);
+  };
   const getPositionX = (char) => {
     const variable = variables.find(variable => variable.name === char);
     return variable ? variable.positionX : null;
@@ -33,15 +98,15 @@ const PostfixEvaluator = () => {
   
 
   const isOperand = (char) => {
-    // Check if the character is an alphabetic variable (a-z or A-Z)
+    
     return /^[a-zA-Z]+$/.test(char);
   };
   let str = '';
-  const evaluateExpression = () => {
+  const evaluateExpression = (result) => {
     const tempStack = [];
     str += `<svg width="10000" height="1000" xmlns="http://www.w3.org/2000/svg">`;
-
-    for (let char of expression) {
+   
+    for (let char of result) {
       if (isOperand(char)) {
         if(!variables.some(variable => variable.name === char))
         {
@@ -61,7 +126,7 @@ const PostfixEvaluator = () => {
 
     let stepDuration = disOfVar + 100;
 
-    for (let char of expression) {
+    for (let char of result) {
       if (isOperand(char)) {
         const stackVar = {
           name: char,
@@ -74,7 +139,7 @@ const PostfixEvaluator = () => {
         tempStack.push(stackVar);
         
       } else{
-        // Pop two operands from the stack
+        
 
         if(char === '\'')
         {
@@ -421,13 +486,15 @@ const PostfixEvaluator = () => {
   return (
     <div>
       <h2>Postfix Expression Evaluator</h2>
-      <input
-        type="text"
-        value={expression}
-        onChange={(e) => setExpression(e.target.value)}
-        placeholder="Enter postfix expression"
-      />
-      <button onClick={evaluateExpression}>Evaluate</button>
+      <form onSubmit={handleSubmit}>
+        <input
+          type="text"
+          value={input}
+          onChange={handleChange}
+          placeholder="Enter  expression"
+        />
+        <button type="submit">Done</button>
+      </form>
       <h3>Stack Content</h3>
       <div dangerouslySetInnerHTML={{ __html: elements }} />
     </div>
