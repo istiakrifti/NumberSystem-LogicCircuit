@@ -12,10 +12,10 @@ const ShuntingYardAlgorithm = (infix) => {
 
   const output = [];
   const stack = [];
-  
+
   for (let i = 0; i < infix.length; i++) {
     let token = infix[i];
-    
+
     if (/[A-Z]/.test(token)) {
       
       if (infix[i + 1] === "'") {
@@ -32,14 +32,20 @@ const ShuntingYardAlgorithm = (infix) => {
         output.push(top);
         top = stack.pop();
       }
-    } else if (['+', '*', '/',"'"].includes(token)) {
-      while (stack.length && ops[stack[stack.length - 1]] >= ops[token]) {
-        output.push(stack.pop());
+    } else if (['+', '*', '/', "'"].includes(token)) {
+      if (token === "'") {
+        
+        output[output.length - 1] += "'";
+      } else {
+        while (stack.length && ops[stack[stack.length - 1]] >= ops[token]) {
+          output.push(stack.pop());
+        }
+        stack.push(token);
       }
-      stack.push(token);
     }
   }
 
+  
   while (stack.length) {
     output.push(stack.pop());
   }
@@ -107,7 +113,7 @@ const PostfixEvaluator = () => {
   const evaluateExpression = (result) => {
     const tempStack = [];
     str += `<svg width="10000" height="1000" xmlns="http://www.w3.org/2000/svg">`;
-   
+  
     for (let char of result) {
       if (isOperand(char)) {
         if(!variables.some(variable => variable.name === char))
@@ -471,14 +477,26 @@ const PostfixEvaluator = () => {
       }
     }
     const lastElement = tempStack.pop();
-    if(!lastElement.isNot) str += `<line x1=${lastElement.gateOutX} y1=${lastElement.gateOutY} x2=${lastElement.gateOutX+150} y2=${lastElement.gateOutY} stroke="black" stroke-width="2" />`;
+
+    if(lastElement.name.length === 1)
+    {
+      str += `<line x1=${lastElement.positionX} y1=${heightofVar+100} x2=${lastElement.positionX+150} y2=${heightofVar+100} stroke="black" stroke-width="2" />
+        <path d="M ${lastElement.positionX+150} ${heightofVar+100-10} L ${lastElement.positionX+150+15} ${heightofVar+100} L ${lastElement.positionX+150} ${heightofVar+100+10} Z" stroke="black" fill="transparent" stroke-width="2" />
+                  <circle cx=${lastElement.positionX+150+19} cy=${heightofVar+100} r="3" fill="none" stroke="black" stroke-width="2"/>
+                  <line x1=${lastElement.positionX+150+23} y1=${heightofVar+100} x2=${lastElement.positionX+150+100} y2=${heightofVar+100} stroke="black" stroke-width="2" />
+                  `;
+    }
     else
     {
-      str += `<line x1=${lastElement.gateOutX} y1=${lastElement.gateOutY} x2=${lastElement.gateOutX+100} y2=${lastElement.gateOutY} stroke="black" stroke-width="2" />
-      <path d="M ${lastElement.gateOutX+100} ${lastElement.gateOutY-10} L ${lastElement.gateOutX+100+15} ${lastElement.gateOutY} L ${lastElement.gateOutX+100} ${lastElement.gateOutY+10} Z" stroke="black" fill="transparent" stroke-width="2" />
-                <circle cx=${lastElement.gateOutX+100+19} cy=${lastElement.gateOutY} r="3" fill="none" stroke="black" stroke-width="2"/>
-                <line x1=${lastElement.gateOutX+100+23} y1=${lastElement.gateOutY} x2=${lastElement.gateOutX+100+100} y2=${lastElement.gateOutY} stroke="black" stroke-width="2" />
-                `;
+      if(!lastElement.isNot) str += `<line x1=${lastElement.gateOutX} y1=${lastElement.gateOutY} x2=${lastElement.gateOutX+150} y2=${lastElement.gateOutY} stroke="black" stroke-width="2" />`;
+      else
+      {
+        str += `<line x1=${lastElement.gateOutX} y1=${lastElement.gateOutY} x2=${lastElement.gateOutX+100} y2=${lastElement.gateOutY} stroke="black" stroke-width="2" />
+        <path d="M ${lastElement.gateOutX+100} ${lastElement.gateOutY-10} L ${lastElement.gateOutX+100+15} ${lastElement.gateOutY} L ${lastElement.gateOutX+100} ${lastElement.gateOutY+10} Z" stroke="black" fill="transparent" stroke-width="2" />
+                  <circle cx=${lastElement.gateOutX+100+19} cy=${lastElement.gateOutY} r="3" fill="none" stroke="black" stroke-width="2"/>
+                  <line x1=${lastElement.gateOutX+100+23} y1=${lastElement.gateOutY} x2=${lastElement.gateOutX+100+100} y2=${lastElement.gateOutY} stroke="black" stroke-width="2" />
+                  `;
+      }
     }
     str += `</svg>`;
     setStack(tempStack);
